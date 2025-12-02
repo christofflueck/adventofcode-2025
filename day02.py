@@ -48,6 +48,7 @@ def part_b(data: str) -> int:
     agg = 0
 
     for start, end, len_start, len_end in data:
+        found = set()
 
         for num_segments in range(2, len_end + 1):
             len_segment = None
@@ -58,29 +59,19 @@ def part_b(data: str) -> int:
             if len_segment is None:
                 continue
 
-            absolute_min = start // (10 ** (len_start // num_segments))
-            absolute_max = end // (10 ** (len_end // num_segments))
-
-            print(
-                f"{start}-{end}: {num_segments} segments of length {len_segment}, min: {absolute_min}, max: {absolute_max} "
-            )
-
             for curr_len in range(len_start, len_end + 1):
                 if curr_len % num_segments != 0:
                     continue
                 half = curr_len // num_segments
 
-                segment_start = max(absolute_min, int("1" + "0" * (half - 1)))
-                segment_end = min(absolute_max, int("9" * half))
-                print(f"segment: {segment_start}-{segment_end} * {num_segments}")
+                segment_start = int("1" + "0" * (half - 1))
+                segment_end = int("9" * half)
 
                 for i in range(segment_start, segment_end + 1):
                     curr = int(str(i) * num_segments)
                     if start <= curr <= end:
-                        print(f"{start}-{end}: {curr}")
-
-                        agg += curr
-
+                        found.add(curr)
+        agg += sum(found)
     return agg
 
 
