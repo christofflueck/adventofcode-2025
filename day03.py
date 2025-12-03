@@ -10,59 +10,30 @@ def part_a(data: str) -> int:
     banks = parse_data(data)
 
     num_batteries = 2
-    total_jolts = 0
 
-    for bank in banks:
-        used_batteries = set()
-        jolts = ""
-        start = 0
-        for i in range(num_batteries):
-            highest = None
-            subbank = bank[start : len(bank) - num_batteries + i + 1]
-            for batteryIndex, battery in enumerate(subbank):
-                if batteryIndex + start in used_batteries:
-                    continue
-                if highest is None:
-                    highest = batteryIndex + start
-                    continue
-                if battery > bank[highest]:
-                    highest = batteryIndex + start
-            start = highest + 1
-            used_batteries.add(highest)
-            jolts += str(bank[highest])
-
-        total_jolts += int(jolts)
-
-    return total_jolts
+    return get_jolts(banks, num_batteries)
 
 
 def part_b(data: str) -> int:
     banks = parse_data(data)
 
     num_batteries = 12
-    total_jolts = 0
+    return get_jolts(banks, num_batteries)
 
+
+def get_jolts(banks, num_batteries):
+    total_jolts = 0
     for bank in banks:
-        used_batteries = set()
-        jolts = ""
+        jolts = 0
         start = 0
+        max_end = len(bank) - num_batteries + 1
         for i in range(num_batteries):
-            highest = None
-            subbank = bank[start : len(bank) - num_batteries + i + 1]
-            for batteryIndex, battery in enumerate(subbank):
-                if batteryIndex + start in used_batteries:
-                    continue
-                if highest is None:
-                    highest = batteryIndex + start
-                    continue
-                if battery > bank[highest]:
-                    highest = batteryIndex + start
+            subbank = bank[start: max_end + i ]
+            highest = start + max(range(len(subbank)), key=subbank.__getitem__)
             start = highest + 1
-            used_batteries.add(highest)
-            jolts += str(bank[highest])
+            jolts += bank[highest] * 10**(num_batteries - i - 1)
 
         total_jolts += int(jolts)
-
     return total_jolts
 
 
