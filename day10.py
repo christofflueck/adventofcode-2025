@@ -3,6 +3,7 @@ from z3 import Int, Solver, Sum, sat, Optimize
 from run_util import run_puzzle
 from collections import deque
 
+
 def parse_data(data: str):
     for machine in data.splitlines():
         machine_end = machine.find("]")
@@ -48,27 +49,22 @@ def part_b(data: str) -> int:
 
     total_clicks = 0
     for _, toggles, joltage in data:
+        s = Optimize()
         toggle_clicks = [Int(f"t{i}") for i in range(len(toggles))]
 
-        # Use Optimize instead of Solver
-        s = Optimize()
-
-        # Constraint 1: Clicks cannot be negative
         for t in toggle_clicks:
             s.add(t >= 0)
 
-        # Constraint 2: The math must balance
         for joltage_index, j in enumerate(joltage):
             s.add(j == Sum([toggle_clicks[i] * toggles[i][joltage_index] for i in range(len(toggles))]))
 
-        # OBJECTIVE: Find the solution with the fewest total clicks
         s.minimize(Sum(toggle_clicks))
 
         if s.check() == sat:
             m = s.model()
             total_clicks += sum(m[t].as_long() for t in toggle_clicks)
         else:
-            print(f"Machine {joltage} is UNSAT (No solution found)")
+            print("Warning: A machine has no solution!")
 
     return total_clicks
 
